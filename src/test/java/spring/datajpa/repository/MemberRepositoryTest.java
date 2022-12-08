@@ -3,6 +3,9 @@ package spring.datajpa.repository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.transaction.annotation.Transactional;
 import spring.datajpa.dto.MemberDto;
 import spring.datajpa.entity.Member;
@@ -142,5 +145,41 @@ class MemberRepositoryTest {
         Member fimdMember = memberRepository.findMemberByUsername("AAA");
         Optional<Member> optional = memberRepository.findOptionalByUsername("AAA");
     }
+
+    @Test
+    public void paging() {
+        //given
+        memberRepository.save(new Member("member1", 10));
+        memberRepository.save(new Member("member2", 10));
+        memberRepository.save(new Member("member3", 10));
+        memberRepository.save(new Member("member4", 10));
+        memberRepository.save(new Member("member5", 10));
+
+        PageRequest pageRequest = PageRequest.of(0, 3, Sort.Direction.DESC, "username");
+
+        //when
+        Page<Member> page = memberRepository.findByAge(10, pageRequest);
+        List<Member> content = page.getContent();
+
+        // Page 엔티티 -> Dto로 간편하게 변환
+        Page<MemberDto> toMap = page.map(m -> new MemberDto(m.getId(), m.getUsername(), null));
+
+        //then
+        assertThat(content.size()).isEqualTo(3);
+        assertThat(page.getTotalElements()).isEqualTo(5);
+        assertThat(page.getNumber()).isEqualTo(0);
+        assertThat(page.getTotalPages()).isEqualTo(2);
+        assertThat(page.isFirst()).isTrue();
+        assertThat(page.hasNext()).isTrue();
+
+        // slice
+//        Slice<Member> slice = memberRepository.findByAge(10, pageRequest);
+//        List<Member> sliceContent = slice.getContent();
+//        assertThat(sliceContent.size()).isEqualTo(3);
+//        assertThat(slice.getNumber()).isEqualTo(0);
+//        assertThat(slice.isFirst()).isTrue();
+//        assertThat(slice.hasNext()).isTrue();
+    }
+
 
 }
