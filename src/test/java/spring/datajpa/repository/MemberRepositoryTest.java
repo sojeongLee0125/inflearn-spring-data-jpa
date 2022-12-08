@@ -11,6 +11,8 @@ import spring.datajpa.dto.MemberDto;
 import spring.datajpa.entity.Member;
 import spring.datajpa.entity.Team;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -25,6 +27,9 @@ class MemberRepositoryTest {
     MemberRepository memberRepository;
     @Autowired
     TeamRepository teamRepository;
+
+    @PersistenceContext
+    EntityManager em;
 
     @Test
     void testMember() {
@@ -179,6 +184,29 @@ class MemberRepositoryTest {
 //        assertThat(slice.getNumber()).isEqualTo(0);
 //        assertThat(slice.isFirst()).isTrue();
 //        assertThat(slice.hasNext()).isTrue();
+    }
+
+    @Test
+    void bulkUpdate() {
+        // given
+        memberRepository.save(new Member("member1", 19));
+        memberRepository.save(new Member("member2", 19));
+        memberRepository.save(new Member("member3", 20));
+        memberRepository.save(new Member("member4", 21));
+        memberRepository.save(new Member("member5", 40));
+
+        // when
+        int resultCount = memberRepository.bulkAgePlus(20);
+
+        // 벌크 연산 이후 영속성 컨텍스트를 날려주지 않으면 1차 캐시에 저장된 내용과 디비 내용이 달라진다.
+        // @Modifying(clearAutomatically = true) 가 아래 작업들을 대신한다.
+        // em.flush(); em.clear();
+
+        Member result = memberRepository.findMemberByUsername("member5");
+        System.out.println("result = " + result);
+
+        // then
+        assertThat(resultCount).isEqualTo(3);
     }
 
 
