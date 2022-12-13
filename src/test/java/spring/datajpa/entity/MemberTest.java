@@ -51,7 +51,7 @@ class MemberTest {
     }
 
     @Test
-    void JpaEventBaseEntity() throws InterruptedException {
+    void JpaEventBaseEntity() throws Exception {
         // given
         Member member1 = new Member("member1");
         memberRepository.save(member1); // @PrePersist
@@ -67,7 +67,10 @@ class MemberTest {
 
         // then
         System.out.println("find.getCreatedDate() = " + find.getCreatedDate());
-        System.out.println("find.getUpdatedDate() = " + find.getUpdatedDate());
+//        System.out.println("find.getUpdatedDate() = " + find.getUpdatedDate());
+        System.out.println("find.getUpdatedDate() = " + find.getLastModifiedDate());
+        System.out.println("find.getCreatedBy() = " + find.getCreatedBy());
+        System.out.println("find.getModifiedBy() = " + find.getModifiedBy());
     }
 
 }
