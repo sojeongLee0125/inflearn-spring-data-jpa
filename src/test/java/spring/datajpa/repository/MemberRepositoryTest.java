@@ -299,7 +299,7 @@ class MemberRepositoryTest {
     }
 
     @Test
-    void projections(){
+    void projections() {
         // given
         Team teamA = new Team("TeamA");
         em.persist(teamA);
@@ -313,9 +313,12 @@ class MemberRepositoryTest {
         em.clear();
 
         //when
-        List<UsernameOnly> result = memberRepository.findProjectionsByUsername("member1");
-        for (UsernameOnly usernameOnly : result) {
-            System.out.println("usernameOnly = " + usernameOnly);
+//        List<UsernameOnly> result = memberRepository.findProjectionsByUsername("member1");
+//        List<UsernameOnlyDto> result = memberRepository.findProjectionsByUsername("member1");
+        List<UsernameOnlyDto> result = memberRepository.findProjectionsByUsername("member1", UsernameOnlyDto.class);
+
+        for (UsernameOnlyDto dto : result) {
+            System.out.println("dto = " + dto);
         }
 
 
