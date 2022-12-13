@@ -315,10 +315,12 @@ class MemberRepositoryTest {
         //when
 //        List<UsernameOnly> result = memberRepository.findProjectionsByUsername("member1");
 //        List<UsernameOnlyDto> result = memberRepository.findProjectionsByUsername("member1");
-        List<UsernameOnlyDto> result = memberRepository.findProjectionsByUsername("member1", UsernameOnlyDto.class);
+//        List<UsernameOnlyDto> result = memberRepository.findProjectionsByUsername("member1", UsernameOnlyDto.class);
+        List<NestedClosedProjections> result = memberRepository.findProjectionsByUsername("member1", NestedClosedProjections.class);
 
-        for (UsernameOnlyDto dto : result) {
-            System.out.println("dto = " + dto);
+        for (NestedClosedProjections nestedClosedProjections : result) {
+            System.out.println("nestedClosedProjections = " + nestedClosedProjections.getUsername());
+            System.out.println("nestedClosedProjections = " + nestedClosedProjections.getTeam().getName());
         }
 
 
