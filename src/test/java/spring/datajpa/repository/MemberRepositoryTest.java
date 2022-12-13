@@ -3,9 +3,7 @@ package spring.datajpa.repository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import org.springframework.transaction.annotation.Transactional;
 import spring.datajpa.dto.MemberDto;
 import spring.datajpa.entity.Member;
@@ -210,7 +208,7 @@ class MemberRepositoryTest {
     }
 
     @Test
-    void findMemberLazy(){
+    void findMemberLazy() {
         // given
         // member1 -> teamA
         // member2 -> teamB
@@ -223,10 +221,10 @@ class MemberRepositoryTest {
         Member member2 = new Member("member2", 20, teamB);
         memberRepository.save(member1);
         memberRepository.save(member2);
-        
+
         em.flush();
         em.clear();
-        
+
         //when
 //        List<Member> all = memberRepository.findMemberFetchJoin();
 //        List<Member> all = memberRepository.findAll();
@@ -238,7 +236,7 @@ class MemberRepositoryTest {
     }
 
     @Test
-    void queryHint(){
+    void queryHint() {
         // given
         Member member1 = memberRepository.save(new Member("member1", 10));
         em.flush();
@@ -252,7 +250,7 @@ class MemberRepositoryTest {
     }
 
     @Test
-    void lock(){
+    void lock() {
         // given
         Member member1 = memberRepository.save(new Member("member1", 10));
         em.flush();
@@ -263,8 +261,41 @@ class MemberRepositoryTest {
     }
 
     @Test
-    void callCustom(){
+    void callCustom() {
         List<Member> memberCustom = memberRepository.findMemberCustom();
+    }
+
+    @Test
+    void queryByExample() {
+        // given
+        Team teamA = new Team("TeamA");
+        em.persist(teamA);
+
+        Member member1 = new Member("member1", 10, teamA);
+        Member member2 = new Member("member2", 20, teamA);
+        em.persist(member1);
+        em.persist(member2);
+
+        em.flush();
+        em.clear();
+
+        // when
+
+        // Probe 생성
+        Member member = new Member("member1");
+        Team team = new Team("TeamA");
+
+        // 이너조인만 가능하다.
+        member.setTeam(team);
+
+        ExampleMatcher matcher = ExampleMatcher.matching()
+                .withIgnorePaths("age");
+
+        Example<Member> example = Example.of(member, matcher);
+        List<Member> result = memberRepository.findAll(example);
+
+        // then
+        assertThat(result.get(0).getUsername()).isEqualTo("member1");
     }
 
 
