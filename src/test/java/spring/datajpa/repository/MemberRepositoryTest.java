@@ -322,7 +322,25 @@ class MemberRepositoryTest {
             System.out.println("nestedClosedProjections = " + nestedClosedProjections.getUsername());
             System.out.println("nestedClosedProjections = " + nestedClosedProjections.getTeam().getName());
         }
+    }
 
+    @Test
+    void nativeQuery() {
+        // given
+        Team teamA = new Team("TeamA");
+        em.persist(teamA);
+
+        Member member1 = new Member("member1", 10, teamA);
+        Member member2 = new Member("member2", 20, teamA);
+        em.persist(member1);
+        em.persist(member2);
+
+        em.flush();
+        em.clear();
+
+        // when
+        Member find = memberRepository.findByNativeQuery("member1");
+        System.out.println("find.getUsername() = " + find.getUsername());
 
     }
 
